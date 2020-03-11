@@ -45,7 +45,7 @@ template <class T> GLRow<T>::GLRow(T &newInfo)   {
 
 template <class T> GLRow<T>::GLRow(GLRow<T> &anotherOne) {
     //Does it copy info, next, and down?
-    _Info = anotherOne._Info;
+    _Info = new T (anotherOne.getInfo());
     _Down = anotherOne._Down;
     _Next = anotherOne._Next;
 }
@@ -59,7 +59,7 @@ template <class T> int GLRow<T>::getDown() {
 }
 
 template <class T> T & GLRow<T>::getInfo() {
-    return _Info;
+    return (*_Info);
 }
 
 template <class T> void GLRow<T>::setNext(int n)  {
@@ -75,13 +75,20 @@ template <class T> void GLRow<T>::setInfo(T &x) {
 }
 
 template <class T> GLRow<T>::~GLRow() {
-    delete _Info;
+    delete _Info; //todo ASK NATHAN
 }
 
 template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
-    _Info = anotherOne._Info;
+    _Info = new T (anotherOne.getInfo());
     _Down = anotherOne._Down;
     _Next = anotherOne._Next;
+    return (*this);
+}
+template <class T> ostream& operator << (ostream& s, GLRow<T>& row)   {
+    s << "Down: " << row.getDown() << endl;
+    s << "Next: " << row.getNext() << endl;
+    s << "Info: " << row.getInfo() << endl;
+    return s;
 }
 
 template<class T>
@@ -138,7 +145,7 @@ template <class T> ArrayGLL<T>::ArrayGLL(int size) {
     myGLL = new GLRow<T> [size];
     maxSize = size;
     firstElement = -1; //TODO know if these values are correct
-    firstFree = 0;
+    firstFree = -1;
 }
 
 template <class T> ArrayGLL<T>::ArrayGLL(ArrayGLL<T> &anotherOne) {
@@ -161,6 +168,7 @@ template <class T> void ArrayGLL<T>::display() {
 
 template <class T> int ArrayGLL<T>::find(T &key) {
     //todo
+
 }
 
 template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
@@ -169,6 +177,13 @@ template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
 
 template <class T> int ArrayGLL<T>::noFree() {
     //todo
+    int numberFree = 1;
+    int nextValue = myGLL[firstFree].getNext();
+    while (nextValue != -1)   {
+        numberFree = numberFree + 1;
+        nextValue = myGLL[nextValue].getNext();
+    }
+    return numberFree;
 }
 
 template <class T> int ArrayGLL<T>::size() {
@@ -181,6 +196,7 @@ template <class T> int ArrayGLL<T>::parentPos(T &Key) {
 
 template <class T> GLRow<T>& ArrayGLL<T>::operator[](int pos) {
     //todo return the GLRow at position [i]
+    return myGLL[pos];
 }
 
 template <class T> int ArrayGLL<T>::getFirstFree() {
@@ -201,6 +217,11 @@ template <class T> void ArrayGLL<T>::setFirstElement(int pos) {
 
 template <class T> ArrayGLL<T>::~ArrayGLL() {
     delete[] myGLL;
+}
+
+template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
+    s << "Array not done yet" << endl;
+    return s;
 }
 
 
@@ -224,22 +245,25 @@ int main() {
     // make sure you define all the variables
     // first line of input contains the number of segments
     cin >> noElements;
-//    for (int i = 0; i < noElements; i++) {
-//        cin >> value >> next >> down;
-//        oneRow.setInfo(value);
-//        oneRow.setNext(next);
-//        oneRow.setDown(down);
-//        firstGLL[i] = oneRow;
-//    }
-//    firstGLL.setFirstFree(noElements);
-//    firstGLL.setFirstElement(0);
-//    cout << firstGLL << endl;
-//    firstGLL.display();
-//    ArrayGLL<int> *secondGLL = new ArrayGLL<int>(firstGLL);
-//    int temp600 = 600;
-//    int temp700 = 700;
-//    (*secondGLL)[1].setInfo(temp600);
-//    (*secondGLL)[2].setInfo(temp700);
+    for (int i = 0; i < noElements; i++) {
+        cin >> value >> next >> down;
+        oneRow.setInfo(value);
+        oneRow.setNext(next);
+        oneRow.setDown(down);
+        firstGLL[i] = oneRow;
+        cout <<firstGLL[i]<<"\n"<<endl; //testing
+    }
+//    cout << firstGLL[1] << endl;
+    firstGLL.setFirstFree(noElements);
+    firstGLL.setFirstElement(0);
+    cout << firstGLL << endl;
+    firstGLL.display();
+    ArrayGLL<int> *secondGLL = new ArrayGLL<int>(firstGLL);
+    int temp600 = 600;
+    int temp700 = 700;
+    cout << firstGLL[5].getInfo()<<endl;  //Testing
+    (*secondGLL)[1].setInfo(temp600);
+    (*secondGLL)[2].setInfo(temp700);
 //    cout << *secondGLL << endl;
 //    (*secondGLL).display();
 //    keyValue = 700;
