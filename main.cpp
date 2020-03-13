@@ -75,7 +75,7 @@ template <class T> void GLRow<T>::setInfo(T &x) {
 }
 
 template <class T> GLRow<T>::~GLRow() {
-    delete _Info; //todo ASK NATHAN
+//    delete _Info; //todo ASK NATHAN
 }
 
 template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
@@ -106,6 +106,7 @@ protected:
     int maxSize; //Maximum size of the array of GLRows
     int firstElement;
     int firstFree;
+    int foundElement = -1; //I made this
 
 public:
     ArrayGLL();
@@ -114,6 +115,7 @@ public:
     ArrayGLL<T> &operator=(ArrayGLL<T> &anotherOne);
     void display(); //display in parenthesis format 10% BONUS
     int find(T &key); //return the index position where you find
+    int findHelper(T &key, int startingIndex);
     // the element key; -1 if not found; use recursive search
     void findDisplayPath(T &Key); // as you travel through the tree
     // print the values of nodes encountered. If the element is
@@ -168,6 +170,41 @@ template <class T> void ArrayGLL<T>::display() {
 
 template <class T> int ArrayGLL<T>::find(T &key) {
     //todo
+    int answer = findHelper(key, firstElement);
+    return answer;
+}
+
+template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
+    if (key == myGLL[startingIndex].getInfo())   {
+        foundElement = startingIndex; //Test
+        cout << "IN ARRAY: " << startingIndex << endl;
+        return startingIndex; //might want to make a class variable for this.
+    }
+    //todo make it so that if both next and down are not -1 it can handle it.
+    else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
+        findHelper(key, myGLL[startingIndex].getDown());
+        if ( foundElement == -1)   {
+            findHelper(key, myGLL[startingIndex].getNext());
+        }
+    }
+    else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
+        foundElement = -1; //test
+        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
+        return -1;
+    }
+    else if (myGLL[startingIndex].getNext() == -1)   {
+        findHelper(key, myGLL[startingIndex].getDown());
+    }
+    else if (myGLL[startingIndex].getNext() != -1)   {
+        findHelper(key, myGLL[startingIndex].getNext());
+    }
+    else if (myGLL[startingIndex].getDown() == -1 )   {
+        findHelper(key, myGLL[startingIndex].getNext());
+    }
+    else if (myGLL[startingIndex].getDown() != -1)   {
+        findHelper(key, myGLL[startingIndex].getDown());
+    }
+    return foundElement;
 
 }
 
@@ -216,7 +253,7 @@ template <class T> void ArrayGLL<T>::setFirstElement(int pos) {
 }
 
 template <class T> ArrayGLL<T>::~ArrayGLL() {
-    delete[] myGLL;
+//    delete[] myGLL;
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -262,8 +299,17 @@ int main() {
     int temp600 = 600;
     int temp700 = 700;
     cout << firstGLL[5].getInfo()<<endl;  //Testing
-    (*secondGLL)[1].setInfo(temp600);
-    (*secondGLL)[2].setInfo(temp700);
+//    (*secondGLL)[1].setInfo(temp600);
+//    (*secondGLL)[2].setInfo(temp700);
+
+    cout << "element test: " << (*secondGLL)[2] << endl;
+
+    (*secondGLL).setFirstElement(2);
+    int testing = 10;
+    int found = (*secondGLL).find(testing);
+    cout << "find: " << found;
+
+
 //    cout << *secondGLL << endl;
 //    (*secondGLL).display();
 //    keyValue = 700;
