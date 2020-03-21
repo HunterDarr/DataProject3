@@ -121,7 +121,7 @@ public:
     void findDisplayPath(T &Key); // as you travel through the tree
     // print the values of nodes encountered. If the element is
     // you will print the all the values
-    void findDisplayPathHelper(T &Key, int startingIndex);
+    void findDisplayPathHelper(T &key, int startingIndex);
     int noFree(); //return the number of free locations; you need
     // to follow the _Next and get the free locations
     int size(); //return the number of elements stored
@@ -218,12 +218,40 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
 }
 
 template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
-    //todo
+    //todo NOT DONE
+    findDisplayPathHelper(Key, firstElement);
 
 }
 
-template <class T> void ArrayGLL<T>::findDisplayPathHelper(T &Key, int startingIndex) {
+template <class T> void ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) { //TODO not done
 
+    cout << myGLL[startingIndex] << endl;
+
+    if (key == myGLL[startingIndex].getInfo())   {
+        cout << "IN ARRAY: " << startingIndex << endl;
+//        return startingIndex; //might want to make a class variable for this.
+    }
+        //todo make it so that if both next and down are not -1 it can handle it.
+    else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
+        findHelper(key, myGLL[startingIndex].getDown());
+        findHelper(key, myGLL[startingIndex].getNext());
+    }
+    else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
+        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
+//        return -1;
+    }
+    else if (myGLL[startingIndex].getNext() == -1)   {
+        findHelper(key, myGLL[startingIndex].getDown());
+    }
+    else if (myGLL[startingIndex].getNext() != -1)   {
+        findHelper(key, myGLL[startingIndex].getNext());
+    }
+    else if (myGLL[startingIndex].getDown() == -1 )   {
+        findHelper(key, myGLL[startingIndex].getNext());
+    }
+    else if (myGLL[startingIndex].getDown() != -1)   {
+        findHelper(key, myGLL[startingIndex].getDown());
+    }
 
 }
 
@@ -250,14 +278,11 @@ template <class T> int ArrayGLL<T>::sizeHelper(int startingIndex) {  //todo FINI
     listSize = listSize + 1;
     if ( myGLL[startingIndex].getInfo() == NULL)   {
         listSize = -123;
-//        return -1;
     }
         //todo make it so that if both next and down are not -1 it can handle it.
     else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
         sizeHelper(myGLL[startingIndex].getDown());
-        if ( listSize == 0)   {
-            sizeHelper(myGLL[startingIndex].getNext());
-        }
+        sizeHelper(myGLL[startingIndex].getNext());
     }
     else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
 //        listSize = -1; //test
@@ -343,7 +368,8 @@ int main() {
         cout <<firstGLL[i]<<"\n"<<endl; //testing
     }
 //    cout << firstGLL[1] << endl;
-    firstGLL.setFirstFree(noElements);
+    firstGLL.setFirstFree(noElements); //Original
+    firstGLL.setFirstFree(8); //what i think is right
     firstGLL.setFirstElement(0);
     cout << firstGLL << endl;
     firstGLL.display();
@@ -362,6 +388,9 @@ int main() {
     cout << "find: " << found << endl;
     int size = (*secondGLL).size();
     cout << "size: " << size << endl;
+    int free = (*secondGLL).noFree();
+    cout << "noFree: " << free << endl;
+//    (*secondGLL).findDisplayPath(testing);
 
 
 //    cout << *secondGLL << endl;
