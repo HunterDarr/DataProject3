@@ -121,7 +121,7 @@ public:
     void findDisplayPath(T &Key); // as you travel through the tree
     // print the values of nodes encountered. If the element is
     // you will print the all the values
-    void findDisplayPathHelper(T &key, int startingIndex);
+    bool findDisplayPathHelper(T &key, int startingIndex);
     int noFree(); //return the number of free locations; you need
     // to follow the _Next and get the free locations
     int size(); //return the number of elements stored
@@ -219,39 +219,70 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
 
 template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
     //todo NOT DONE
+//    cout << "test: " << firstElement << endl;
     findDisplayPathHelper(Key, firstElement);
 
 }
 
-template <class T> void ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) { //TODO not done
+template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) { //TODO not done
 
-    cout << myGLL[startingIndex] << endl;
+//    if (startingIndex != -1)   {
+//        cout << "test: " << startingIndex << endl;
+//    }
 
+    if (startingIndex == -1 )   {
+        return false;
+    }
     if (key == myGLL[startingIndex].getInfo())   {
-        cout << "IN ARRAY: " << startingIndex << endl;
-//        return startingIndex; //might want to make a class variable for this.
+        return true;
     }
-        //todo make it so that if both next and down are not -1 it can handle it.
-    else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
-        findHelper(key, myGLL[startingIndex].getDown());
-        findHelper(key, myGLL[startingIndex].getNext());
+
+    if (findDisplayPathHelper(key, myGLL[startingIndex].getNext()))   {
+        return true;
     }
-    else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
-        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
-//        return -1;
+    if (findDisplayPathHelper(key, myGLL[startingIndex].getDown()))   {
+        cout << "test: " << startingIndex << " out: " << myGLL[startingIndex] << endl;
+        return true;
     }
-    else if (myGLL[startingIndex].getNext() == -1)   {
-        findHelper(key, myGLL[startingIndex].getDown());
-    }
-    else if (myGLL[startingIndex].getNext() != -1)   {
-        findHelper(key, myGLL[startingIndex].getNext());
-    }
-    else if (myGLL[startingIndex].getDown() == -1 )   {
-        findHelper(key, myGLL[startingIndex].getNext());
-    }
-    else if (myGLL[startingIndex].getDown() != -1)   {
-        findHelper(key, myGLL[startingIndex].getDown());
-    }
+
+//    bool down = findDisplayPathHelper(key, myGLL[startingIndex].getDown());
+//    if (myGLL[startingIndex].getDown() != -1)   {
+//        cout << "test: " << myGLL[startingIndex].getDown() << endl;
+//    }
+//
+//    if ( down != true ) {
+//        bool next = findDisplayPathHelper(key, myGLL[startingIndex].getNext());
+//    }
+
+
+
+//    cout << myGLL[startingIndex] << endl;
+//
+//    if (key == myGLL[startingIndex].getInfo())   {
+//        cout << "IN ARRAY: " << startingIndex << endl;
+////        return startingIndex; //might want to make a class variable for this.
+//    }
+//        //todo make it so that if both next and down are not -1 it can handle it.
+//    else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
+//        findHelper(key, myGLL[startingIndex].getDown());
+//        findHelper(key, myGLL[startingIndex].getNext());
+//    }
+//    else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
+//        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
+////        return -1;
+//    }
+//    else if (myGLL[startingIndex].getNext() == -1)   {
+//        findHelper(key, myGLL[startingIndex].getDown());
+//    }
+//    else if (myGLL[startingIndex].getNext() != -1)   {
+//        findHelper(key, myGLL[startingIndex].getNext());
+//    }
+//    else if (myGLL[startingIndex].getDown() == -1 )   {
+//        findHelper(key, myGLL[startingIndex].getNext());
+//    }
+//    else if (myGLL[startingIndex].getDown() != -1)   {
+//        findHelper(key, myGLL[startingIndex].getDown());
+//    }
 
 }
 
@@ -384,13 +415,14 @@ int main() {
 
     (*secondGLL).setFirstElement(2);
     int testing = 75;
+    int testingDisplay = 25;
     int found = (*secondGLL).find(testing);
     cout << "find: " << found << endl;
     int size = (*secondGLL).size();
     cout << "size: " << size << endl;
     int free = (*secondGLL).noFree();
     cout << "noFree: " << free << endl;
-//    (*secondGLL).findDisplayPath(testing);
+    (*secondGLL).findDisplayPath(testingDisplay);
 
 
 //    cout << *secondGLL << endl;
