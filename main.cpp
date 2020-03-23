@@ -40,11 +40,10 @@ template <class T> GLRow<T>::GLRow()   {
 }
 
 template <class T> GLRow<T>::GLRow(T &newInfo)   {
-    _Info = &newInfo; //Might need to put &
+    _Info = &newInfo;
 }
 
 template <class T> GLRow<T>::GLRow(GLRow<T> &anotherOne) {
-    //Does it copy info, next, and down?
     _Info = new T (anotherOne.getInfo());
     _Down = anotherOne._Down;
     _Next = anotherOne._Next;
@@ -71,11 +70,11 @@ template <class T> void GLRow<T>::setDown(int d) {
 }
 
 template <class T> void GLRow<T>::setInfo(T &x) {
-    _Info = &x; //Keep an eye on this. might be wrong
+    _Info = &x;
 }
 
 template <class T> GLRow<T>::~GLRow() {
-//    delete _Info; //todo ASK NATHAN
+//    delete _Info; //todo
 }
 
 template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
@@ -85,9 +84,7 @@ template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
     return (*this);
 }
 template <class T> ostream& operator << (ostream& s, GLRow<T>& row)   {
-    s << "Down: " << row.getDown() << endl;
-    s << "Next: " << row.getNext() << endl;
-    s << "Info: " << row.getInfo() << endl;
+    s << "Info: " << row.getInfo() << ", Next: " << row.getNext() << ", Down: " << row.getDown() << endl;
     return s;
 }
 
@@ -169,6 +166,7 @@ template <class T> ArrayGLL<T>& ArrayGLL<T>::operator=(ArrayGLL<T> &anotherOne) 
 
 template <class T> void ArrayGLL<T>::display() {
     //TODO Fill in for bonus
+    cout << "(display bonus not completed)" << endl;
 }
 
 template <class T> int ArrayGLL<T>::find(T &key) {
@@ -181,15 +179,12 @@ template <class T> int ArrayGLL<T>::find(T &key) {
 template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
     if ( myGLL[startingIndex].getInfo() == NULL)   {
         foundElement = -1;
-//        return -1;
     }
 
     if (key == myGLL[startingIndex].getInfo())   {
         foundElement = startingIndex; //Test
-        cout << "IN ARRAY: " << startingIndex << endl;
-//        return startingIndex; //might want to make a class variable for this.
     }
-    //todo make it so that if both next and down are not -1 it can handle it.
+    //makes it so that if both next and down are not -1 it can handle it.
     else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
         findHelper(key, myGLL[startingIndex].getDown());
         if ( foundElement == -1)   {
@@ -197,9 +192,7 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
         }
     }
     else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
-        foundElement = -1; //test
-        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
-//        return -1;
+        foundElement = -1;
     }
     else if (myGLL[startingIndex].getNext() == -1)   {
         findHelper(key, myGLL[startingIndex].getDown());
@@ -218,22 +211,15 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
 }
 
 template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
-    //todo NOT DONE
-//    cout << "test: " << firstElement << endl;
     findDisplayPathHelper(Key, firstElement);
-
 }
 
 template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) { //TODO not done
-
-//    if (startingIndex != -1)   {
-//        cout << "test: " << startingIndex << endl;
-//    }
-
     if (startingIndex == -1 )   {
         return false;
     }
     if (key == myGLL[startingIndex].getInfo())   {
+        cout << myGLL[startingIndex] << endl;  //Might want to remove
         return true;
     }
 
@@ -241,49 +227,9 @@ template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingI
         return true;
     }
     if (findDisplayPathHelper(key, myGLL[startingIndex].getDown()))   {
-        cout << "test: " << startingIndex << " out: " << myGLL[startingIndex] << endl;
+        cout << myGLL[startingIndex] << endl;
         return true;
     }
-
-//    bool down = findDisplayPathHelper(key, myGLL[startingIndex].getDown());
-//    if (myGLL[startingIndex].getDown() != -1)   {
-//        cout << "test: " << myGLL[startingIndex].getDown() << endl;
-//    }
-//
-//    if ( down != true ) {
-//        bool next = findDisplayPathHelper(key, myGLL[startingIndex].getNext());
-//    }
-
-
-
-//    cout << myGLL[startingIndex] << endl;
-//
-//    if (key == myGLL[startingIndex].getInfo())   {
-//        cout << "IN ARRAY: " << startingIndex << endl;
-////        return startingIndex; //might want to make a class variable for this.
-//    }
-//        //todo make it so that if both next and down are not -1 it can handle it.
-//    else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
-//        findHelper(key, myGLL[startingIndex].getDown());
-//        findHelper(key, myGLL[startingIndex].getNext());
-//    }
-//    else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
-//        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
-////        return -1;
-//    }
-//    else if (myGLL[startingIndex].getNext() == -1)   {
-//        findHelper(key, myGLL[startingIndex].getDown());
-//    }
-//    else if (myGLL[startingIndex].getNext() != -1)   {
-//        findHelper(key, myGLL[startingIndex].getNext());
-//    }
-//    else if (myGLL[startingIndex].getDown() == -1 )   {
-//        findHelper(key, myGLL[startingIndex].getNext());
-//    }
-//    else if (myGLL[startingIndex].getDown() != -1)   {
-//        findHelper(key, myGLL[startingIndex].getDown());
-//    }
-
 }
 
 template <class T> int ArrayGLL<T>::noFree() {
@@ -316,9 +262,6 @@ template <class T> int ArrayGLL<T>::sizeHelper(int startingIndex) {  //todo FINI
         sizeHelper(myGLL[startingIndex].getNext());
     }
     else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
-//        listSize = -1; //test
-        cout << "NOT IN ARRAY: -1 + " << startingIndex << endl;
-//        return -1;
     }
     else if (myGLL[startingIndex].getNext() == -1)   {
         sizeHelper(myGLL[startingIndex].getDown());
@@ -340,7 +283,6 @@ template <class T> int ArrayGLL<T>::parentPos(T &Key) {
 }
 
 template <class T> GLRow<T>& ArrayGLL<T>::operator[](int pos) {
-    //todo return the GLRow at position [i]
     return myGLL[pos];
 }
 
@@ -365,15 +307,13 @@ template <class T> ArrayGLL<T>::~ArrayGLL() {
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
-    s << "Array not done yet" << endl;
+    int i = 0;
+    while ( i < (array.size() + array.noFree()))   {
+        s << array[i];
+        i = i + 1;
+    }
     return s;
 }
-
-
-
-
-
-
 
 //define all your classes here (as given above)
 // write the methods after the class definition (not inside the class
@@ -381,14 +321,17 @@ template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
 // able to work on other main programs as well. I HAVE NOT SYNTAX CHECKED THIS
 // CODE AND IT IS YOUR REPOSIBILITY.
 int main() {
-    ArrayGLL<int> firstGLL(20);
+
+    ArrayGLL<int> firstGLL (20);
     int noElements, value, next, down, parentPos;
     int pos = -1;
     int keyValue;
     int tempValue = 0;
-    GLRow<int> oneRow(tempValue); //note that this statically defined
-    // make sure you define all the variables
-    // first line of input contains the number of segments
+    GLRow<int> oneRow (tempValue); //note that this statically defined
+
+    //make sure you define all the variables
+
+    //first line of input contains the number of segments
     cin >> noElements;
     for (int i = 0; i < noElements; i++) {
         cin >> value >> next >> down;
@@ -396,47 +339,38 @@ int main() {
         oneRow.setNext(next);
         oneRow.setDown(down);
         firstGLL[i] = oneRow;
-        cout <<firstGLL[i]<<"\n"<<endl; //testing
+
     }
-//    cout << firstGLL[1] << endl;
-    firstGLL.setFirstFree(noElements); //Original
-    firstGLL.setFirstFree(8); //what i think is right
-    firstGLL.setFirstElement(0);
+    firstGLL.setFirstFree (8);
+    firstGLL.setFirstElement (2);
     cout << firstGLL << endl;
     firstGLL.display();
-    ArrayGLL<int> *secondGLL = new ArrayGLL<int>(firstGLL);
-    int temp600 = 600;
-    int temp700 = 700;
-    cout << firstGLL[5].getInfo()<<endl;  //Testing
-//    (*secondGLL)[1].setInfo(temp600);
-//    (*secondGLL)[2].setInfo(temp700);
+    ArrayGLL<int>* secondGLL = new ArrayGLL<int>(firstGLL);
 
-    cout << "element test: " << (*secondGLL)[2] << endl;
+    int tempValue600 = 600;
+    (*secondGLL)[1].setInfo(tempValue600);
+    int tempValue700 = 700;
+    (*secondGLL)[2].setInfo(tempValue700);
 
-    (*secondGLL).setFirstElement(2);
-    int testing = 75;
-    int testingDisplay = 25;
-    int found = (*secondGLL).find(testing);
-    cout << "find: " << found << endl;
-    int size = (*secondGLL).size();
-    cout << "size: " << size << endl;
-    int free = (*secondGLL).noFree();
-    cout << "noFree: " << free << endl;
-    (*secondGLL).findDisplayPath(testingDisplay);
+    cout << *secondGLL << endl;
+    (*secondGLL).display();
 
-
-//    cout << *secondGLL << endl;
-//    (*secondGLL).display();
-//    keyValue = 700;
-//    pos = (*secondGLL).find(keyValue);
-//    if (pos /*origonally position*/ != -1) {
-//        cout << (*secondGLL)[pos] << endl;
-//        (*secondGLL).findDisplayPath(keyValue);
-//    }
+    keyValue = 700;
+    pos = (*secondGLL).find(keyValue); //todo make sure find can spit out -1 if its not in the list
+    if (pos != -1)   {
+        cout << "Finding Info of 700 with find(700), setting it to pos...\npos = the index of ";
+        cout << (*secondGLL)[pos] << endl;
+        cout << "Printing the value of nodes up to pos(700 as found with find()) with findDisplayPath(pos): " << endl;
+        (*secondGLL).findDisplayPath(keyValue);
+    }
 //    parentPos = (*secondGLL).parentPos(keyValue);
-//    if (parentPos != -1) { cout << (*secondGLL)[parentPos] << endl; }
-//    cout << (*secondGLL).size();
-//    cout << (*secondGLL).noFree();
-//    delete secondGLL;
-//    return 0;
+//    if (parentPos != -1)   {
+//        cout << (*secondGLL)[parentPos] << endl;
+//    }
+    cout << "Size of secondGLL: " << (*secondGLL).size() << endl;
+    cout << "Number free in secondGLL: " << (*secondGLL).noFree() << endl;
+
+    delete secondGLL;
+
+    return 0;
 }
