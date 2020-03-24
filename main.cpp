@@ -1,7 +1,33 @@
+/**
+ * CS-2413
+ * project3.cpp
+ * Purpose: Create a generalized list data type and its corresponding methods.
+ *
+ * @author Hunter Darr
+ * @Version 1.0 3/23/2020
+ */
 #include <iostream>
-
 using namespace std;
 
+/**
+ * Description:
+ * The GLRow class acts as nodes in a generalized list. It contains the info of the node, the following next node, and following down node.
+ *
+ *
+ * Constructors:
+ * - GLRow(); Default Constructor
+ * - GLRow(T &newInfo); Constructor
+ * - GLRow(GLRow<T> &anotherOne); Copy Constructor
+ * ~GLRow(); Destructor
+ *
+ * Methods:
+ * - int getNext(); Returns _Next
+ * - int getDown(); Returns _Down
+ * - T &getInfo(); Returns _Info
+ * - void setNext(int n); Sets _Next
+ * - void setDown(int d); Sets _Down
+ * - void setInfo(T &x); Sets _Info
+ */
 template<class T>
 class GLRow; //class prototype
 template<class T>
