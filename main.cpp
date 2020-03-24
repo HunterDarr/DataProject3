@@ -113,7 +113,25 @@ template <class T> ostream& operator << (ostream& s, GLRow<T>& row)   {
     s << "Info: " << row.getInfo() << ", Next: " << row.getNext() << ", Down: " << row.getDown() << endl;
     return s;
 }
-
+/**
+ * Description:
+ * The ArrayGLL class combines the GLRow nodes together into a generalized list.
+ * This is achieved using an array.
+ *
+ *
+ * Constructors:
+ * - ArrayGLL(); Default Constructor
+ * - ArrayGLL(int size); Constructor
+ * - ArrayGLL(ArrayGLL<T> &anotherOne); Copy Constructor
+ * - ~ArrayGLL(); Destructor
+ *
+ * Methods:
+ * - void display(); display in parenthesis format 10% BONUS
+ * - int find(T &key); return the index position where you find the element key; -1 if not found; use recursive search
+ * - int findHelper(T &key, int startingIndex); Helps find. Does most of the calculations
+ * - void findDisplayPath(T &Key); as you travel through the tree print the values of nodes encountered. If the element is not in the tree you will print the all the values
+ * - 
+ */
 template<class T>
 class ArrayGLL;//class prototype
 template<class T>
@@ -152,7 +170,6 @@ public:
     int parentPos(T &Key); // provide the location of the parent of
     // the element Key in the array 10% BONUS
     GLRow<T> &operator[](int pos);
-
     //return the GLRow that is in
     // in the position pos in the array
     int getFirstFree();
