@@ -100,7 +100,8 @@ template <class T> void GLRow<T>::setInfo(T &x) {
 }
 
 template <class T> GLRow<T>::~GLRow() {
-//    delete _Info; //todo
+    if ( _Info != NULL)
+    delete _Info;
 }
 
 template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
@@ -130,7 +131,13 @@ template <class T> ostream& operator << (ostream& s, GLRow<T>& row)   {
  * - int find(T &key); return the index position where you find the element key; -1 if not found; use recursive search
  * - int findHelper(T &key, int startingIndex); Helps find. Does most of the calculations
  * - void findDisplayPath(T &Key); as you travel through the tree print the values of nodes encountered. If the element is not in the tree you will print the all the values
- * - 
+ * - bool findDisplayPathHelper(T &key, int startingIndex); Helps findDisplayPath(T &Key). Does most of the calculations.
+ * - int noFree(); Counts the number of free nodes in the generalized linked list.
+ * - int size(); Returns the number of nodes used in the generalized linked list.
+ * - int sizeHelper(int startingIndex); Helps size(), does most of the calculations.
+ * - int parentPos(T &Key); Finds the parent of the given _Info.
+ * - int parentPosHelper(T &Key, int startingPoint, int parentPos); Helps parentPos(T &Key), does most of the calculations.
+ *
  */
 template<class T>
 class ArrayGLL;//class prototype
@@ -169,6 +176,7 @@ public:
     int sizeHelper(int startingIndex);
     int parentPos(T &Key); // provide the location of the parent of
     // the element Key in the array 10% BONUS
+    int parentPosHelper(T &Key, int startingPoint, int parentPos);
     GLRow<T> &operator[](int pos);
     //return the GLRow that is in
     // in the position pos in the array
@@ -189,31 +197,39 @@ template <class T> ArrayGLL<T>::ArrayGLL()   {
 template <class T> ArrayGLL<T>::ArrayGLL(int size) {
     myGLL = new GLRow<T> [size];
     maxSize = size;
-    firstElement = -1; //TODO know if these values are correct
+    firstElement = -1;
     firstFree = -1;
 }
 
 template <class T> ArrayGLL<T>::ArrayGLL(ArrayGLL<T> &anotherOne) {
-    myGLL = anotherOne.myGLL;
-    maxSize = anotherOne.maxSize;
+    myGLL = new GLRow<T>[anotherOne.maxSize];
+    for( int i = 0; i < anotherOne.size() + anotherOne.noFree(); ++i){
+        myGLL[i] = anotherOne.myGLL[i];
+    }
     firstElement = anotherOne.firstElement;
     firstFree = anotherOne.firstFree;
+    maxSize = anotherOne.maxSize;
+
 }
 
 template <class T> ArrayGLL<T>& ArrayGLL<T>::operator=(ArrayGLL<T> &anotherOne) {
-    myGLL = anotherOne.myGLL;
-    maxSize = anotherOne.maxSize;
+    myGLL = new GLRow<T>[anotherOne.maxSize];
+    for( int i = 0; i < anotherOne.size() + anotherOne.noFree(); ++i){
+        myGLL[i] = anotherOne.myGLL[i];
+    }
     firstElement = anotherOne.firstElement;
     firstFree = anotherOne.firstFree;
+    maxSize = anotherOne.maxSize;
+    return (*this);
+
 }
 
 template <class T> void ArrayGLL<T>::display() {
     //TODO Fill in for bonus
-    cout << "(display bonus not completed)" << endl;
+    cout << "(display bonus not completed)\n" << endl;
 }
 
 template <class T> int ArrayGLL<T>::find(T &key) {
-    //todo
     int answer = findHelper(key, firstElement);
     foundElement = -1;
     return answer;
@@ -257,7 +273,7 @@ template <class T> void ArrayGLL<T>::findDisplayPath(T &Key) {
     findDisplayPathHelper(Key, firstElement);
 }
 
-template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) { //TODO not done
+template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingIndex) {
     if (startingIndex == -1 )   {
         return false;
     }
@@ -276,7 +292,6 @@ template <class T> bool ArrayGLL<T>::findDisplayPathHelper(T &key, int startingI
 }
 
 template <class T> int ArrayGLL<T>::noFree() {
-    //todo
     int numberFree = 1;
     int nextValue = myGLL[firstFree].getNext();
     while (nextValue != -1)   {
@@ -287,7 +302,6 @@ template <class T> int ArrayGLL<T>::noFree() {
 }
 
 template <class T> int ArrayGLL<T>::size() {
-    //todo
     int size = sizeHelper(firstElement);
     listSize = 0;
     return size;
@@ -299,7 +313,7 @@ template <class T> int ArrayGLL<T>::sizeHelper(int startingIndex) {  //todo FINI
     if ( myGLL[startingIndex].getInfo() == NULL)   {
         listSize = -123;
     }
-        //todo make it so that if both next and down are not -1 it can handle it.
+        //makes it so that if both next and down are not -1 it can handle it.
     else if ( (myGLL[startingIndex].getNext() != -1) && (myGLL[startingIndex].getDown() != -1))   {
         sizeHelper(myGLL[startingIndex].getDown());
         sizeHelper(myGLL[startingIndex].getNext());
@@ -322,7 +336,31 @@ template <class T> int ArrayGLL<T>::sizeHelper(int startingIndex) {  //todo FINI
 }
 
 template <class T> int ArrayGLL<T>::parentPos(T &Key) {
-    //todo bonus
+    int parentPos = parentPosHelper(Key, firstElement, -1);
+    return parentPos;
+
+}
+
+template <class T> int ArrayGLL<T>::parentPosHelper(T &Key, int startingPoint, int parentPos) {
+    if (startingPoint == -1)   {
+        return -1;
+    }
+    else if (myGLL[startingPoint].getInfo() == Key)   {
+        return parentPos;
+    }
+
+    int next = parentPosHelper(Key, myGLL[startingPoint].getNext(), parentPos);
+    int down = parentPosHelper(Key, myGLL[startingPoint].getDown(), startingPoint);
+
+    if (next != -1)   {
+        return next;
+    }
+    else if ( down != -1)   {
+        return down;
+    }
+    else   {
+        return -1;
+    }
 }
 
 template <class T> GLRow<T>& ArrayGLL<T>::operator[](int pos) {
@@ -346,7 +384,8 @@ template <class T> void ArrayGLL<T>::setFirstElement(int pos) {
 }
 
 template <class T> ArrayGLL<T>::~ArrayGLL() {
-//    delete[] myGLL;
+    if ( myGLL != NULL)
+    delete[] myGLL;
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -399,21 +438,25 @@ int main() {
     (*secondGLL).display();
 
     keyValue = 700;
-    pos = (*secondGLL).find(keyValue); //todo make sure find can spit out -1 if its not in the list
+    pos = (*secondGLL).find(keyValue);
     if (pos != -1)   {
         cout << "Finding Info of 700 with find(700), setting it to pos...\npos = the index of ";
         cout << (*secondGLL)[pos] << endl;
         cout << "Printing the value of nodes up to pos(700 as found with find()) with findDisplayPath(pos): " << endl;
         (*secondGLL).findDisplayPath(keyValue);
     }
-//    parentPos = (*secondGLL).parentPos(keyValue);
-//    if (parentPos != -1)   {
-//        cout << (*secondGLL)[parentPos] << endl;
-//    }
+
+    cout << "Printing out the Parent Position of 700: " << endl;
+    parentPos = (*secondGLL).parentPos(keyValue);
+    if (parentPos != -1)   {
+        cout << (*secondGLL)[parentPos] << endl;
+    }
+    else {
+        cout << "There is no parent position\n" << endl;
+    }
     cout << "Size of secondGLL: " << (*secondGLL).size() << endl;
     cout << "Number free in secondGLL: " << (*secondGLL).noFree() << endl;
 
     delete secondGLL;
-
     return 0;
 }
