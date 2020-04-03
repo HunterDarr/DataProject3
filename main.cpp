@@ -187,6 +187,8 @@ public:
     int getFirstElement();
     void setFirstFree(int pos);
     void setFirstElement(int pos);
+    void insertAChild(T& parent, T& child); //todo New method for project 4
+    void removeANode (T& node); //todo New method for project 4
     ~ArrayGLL(); //destructor
 };
 
