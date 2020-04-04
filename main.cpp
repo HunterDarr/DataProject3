@@ -188,6 +188,7 @@ public:
     void setFirstFree(int pos);
     void setFirstElement(int pos);
     void insertAChild(T& parent, T& child); //todo New method for project 4
+    int findFree();
     void removeANode (T& node); //todo New method for project 4
     ~ArrayGLL(); //destructor
 };
@@ -393,6 +394,27 @@ template <class T> ArrayGLL<T>::~ArrayGLL() {
     }
 }
 
+template <class T> int ArrayGLL<T>::findFree() { //todo test this
+    int firstFreeReturn = firstFree;
+    firstFree = myGLL[firstFreeReturn].getNext();
+    return firstFreeReturn;
+}
+
+template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo test this
+    GLRow<T> childElement(child);
+    int indexOfParent = find(parent);
+    int freeIndex = findFree();
+    int tempDown = myGLL[indexOfParent].getDown();
+    myGLL[indexOfParent].setDown(freeIndex);
+    childElement.setNext(tempDown);
+    childElement.setDown(-1);
+    myGLL[freeIndex] = childElement;
+}
+
+template <class T> void ArrayGLL<T>::removeANode(T &node) {
+    //todo not done
+}
+
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
     int i = 0;
     while ( i < (array.size() + array.noFree()))   {
@@ -432,10 +454,10 @@ int main() {
     firstGLL.display();
     ArrayGLL<int>* secondGLL = new ArrayGLL<int>(firstGLL);  //Creating a second arrayGLL and copying the contents of firstGLL
 
-    int tempValue600 = 600;
-    (*secondGLL)[1].setInfo(tempValue600); //Replaceing the info of [1]
-    int tempValue700 = 700;
-    (*secondGLL)[2].setInfo(tempValue700); //Replacing the info of [2]
+//    int tempValue600 = 600;
+//    (*secondGLL)[1].setInfo(tempValue600); //Replaceing the info of [1]
+//    int tempValue700 = 700;
+//    (*secondGLL)[2].setInfo(tempValue700); //Replacing the info of [2]
 
     cout << *secondGLL << endl;
     (*secondGLL).display();
@@ -459,6 +481,12 @@ int main() {
     }
     cout << "Size of secondGLL: " << (*secondGLL).size() << endl;
     cout << "Number free in secondGLL: " << (*secondGLL).noFree() << endl;
+
+    cout << "insert test: " << endl;
+    int parent = 80;
+    int child = 100;
+    (*secondGLL).insertAChild(parent, child); //todo finish
+    cout << (*secondGLL) << endl;
 
     delete secondGLL;
     return 0;
