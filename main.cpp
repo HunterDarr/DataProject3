@@ -98,10 +98,14 @@ template <class T> void GLRow<T>::setInfo(T &x) {
     _Info = &x;
 }
 
-template <class T> GLRow<T>::~GLRow() {
-    if ( _Info != NULL)   {
+template <class T> GLRow<T>::~GLRow() { // todo Maybe turn info to 999, next to -1 and down to -1
+    int info = 998;
+    setInfo(info);
+    _Next = -1;
+    _Down = -1;
+//    if ( _Info != NULL)   {
 //        delete _Info;
-    }
+//    }
 }
 
 template <class T> GLRow<T> & GLRow<T>::operator=(GLRow<T> &anotherOne) {
@@ -413,6 +417,30 @@ template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo 
 
 template <class T> void ArrayGLL<T>::removeANode(T &node) {
     //todo not done
+    int L = find(node);
+    int deletedNode = -1;
+    if (myGLL[L].getDown() == -1)   {
+        if ( myGLL[L].getNext() == -1)   {
+            deletedNode = L;
+            delete myGLL[L];
+        }
+    }
+    else {
+        int nodeKeeper = L;
+        while (myGLL[nodeKeeper].getDown() != -1)   {
+            nodeKeeper = myGLL[nodeKeeper].getDown();
+        }
+        myGLL[L] = myGLL[nodeKeeper];
+        deletedNode = nodeKeeper;
+        delete myGLL[nodeKeeper];
+    }
+    int freeIndex = firstFree;
+    while (myGLL[freeIndex].getNext() != -1)   {
+        freeIndex = myGLL[freeIndex].getNext();
+    }
+    if (deletedNode != -1)   {
+        myGLL[freeIndex].setNext(deletedNode);
+    }
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -486,6 +514,11 @@ int main() {
     int parent = 80;
     int child = 100;
     (*secondGLL).insertAChild(parent, child); //todo finish
+    cout << (*secondGLL) << endl;
+
+    cout << "\nremove node test: " << endl;
+    int nodeToRemove = 10;
+    (*secondGLL).removeANode(nodeToRemove);
     cout << (*secondGLL) << endl;
 
     delete secondGLL;
