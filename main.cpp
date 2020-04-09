@@ -59,7 +59,9 @@ public:
 };
 
 template <class T> GLRow<T>::GLRow()   {
-    _Info = NULL;
+//    _Info = NULL;
+int inf = 999; //todo revert to above
+setInfo(inf);
     _Next = -1;
     _Down = -1;
 }
@@ -163,6 +165,8 @@ protected:
     int firstFree;
     int foundElement = -1;
     int listSize = 0;
+    int deletedNumber = 999;
+    int deleteDownNext = -1;
 
 public:
     ArrayGLL();
@@ -194,6 +198,7 @@ public:
     void insertAChild(T& parent, T& child); //todo New method for project 4
     int findFree();
     void removeANode (T& node); //todo New method for project 4
+    void removeHelper(int index);
     ~ArrayGLL(); //destructor
 };
 
@@ -245,7 +250,7 @@ template <class T> int ArrayGLL<T>::find(T &key) {
 }
 
 template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
-    if ( myGLL[startingIndex].getInfo() == NULL)   {
+    if ( myGLL[startingIndex].getInfo() == 999)   { //was NULL
         foundElement = -1; //if this happens something is probably wrong.... very wrong...
     }
 
@@ -415,14 +420,26 @@ template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo 
     myGLL[freeIndex] = childElement;
 }
 
-template <class T> void ArrayGLL<T>::removeANode(T &node) {
+template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
     //todo not done
     int L = find(node);
     int deletedNode = -1;
     if (myGLL[L].getDown() == -1)   {
         if ( myGLL[L].getNext() == -1)   {
             deletedNode = L;
-            delete myGLL[L];
+//            int info = 998;
+//            int newDownNext = -1;
+            cout << "This1: " << myGLL[L] << endl;
+            cout << "node to be removed:" << L << endl;
+//            removeHelper(L);
+
+            myGLL[L].setInfo(deletedNumber);
+            myGLL[L].setDown(deleteDownNext);
+            myGLL[L].setNext(deleteDownNext);
+            cout << "This2: " << myGLL[L] << endl;
+            cout << "remove called--------------------------------1" << endl;
+
+//            delete& myGLL[L]; //todo Get nathan to help
         }
     }
     else {
@@ -430,17 +447,35 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) {
         while (myGLL[nodeKeeper].getDown() != -1)   {
             nodeKeeper = myGLL[nodeKeeper].getDown();
         }
+//        cout << "HIT";
         myGLL[L] = myGLL[nodeKeeper];
         deletedNode = nodeKeeper;
-        delete myGLL[nodeKeeper];
+        int info = 998;
+        int deleter = -1;
+        removeHelper(nodeKeeper);
+        cout << "remove called--------------------------------2" << endl;
+//        myGLL[nodeKeeper].setInfo(info);
+//        myGLL[nodeKeeper].setNext(deleter);
+//        myGLL[nodeKeeper].setDown(deleter);
+//        delete& myGLL[nodeKeeper]; //todo get nathan to help
     }
-    int freeIndex = firstFree;
-    while (myGLL[freeIndex].getNext() != -1)   {
-        freeIndex = myGLL[freeIndex].getNext();
-    }
-    if (deletedNode != -1)   {
-        myGLL[freeIndex].setNext(deletedNode);
-    }
+//    int freeIndex = firstFree;
+//    while (myGLL[freeIndex].getNext() != -1)   {
+//        freeIndex = myGLL[freeIndex].getNext();
+//    }
+//    if (deletedNode != -1)   {
+//        myGLL[freeIndex].setNext(deletedNode);
+//    }
+    cout << "ThisOutside: " << myGLL[L] << endl;
+
+}
+
+template <class T> void ArrayGLL<T>::removeHelper(int index) {
+    int newInfo = 998;
+    int newNextAndDown = -1;
+    myGLL[index].setInfo(newInfo);
+    myGLL[index].setNext(newNextAndDown);
+    myGLL[index].setDown(newNextAndDown);
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -467,9 +502,14 @@ int main() {
     int keyValue;
     int tempValue = 0;
     GLRow<int> oneRow (tempValue); //note that this statically defined
+//    GLRow<int>* oneRow = (GLRow<int>*)malloc(sizeof(GLRow<int>));
+//    oneRow->setInfo(tempValue);
+
     cin >> noElements;
     for (int i = 0; i < noElements; i++) {  //Taking inputs and setting them to values and adding them to firstGLL
         cin >> value >> next >> down;
+//        GLRow<int>* oneRow = (GLRow<int>*)malloc(sizeof(GLRow<int>));
+
         oneRow.setInfo(value);
         oneRow.setNext(next);
         oneRow.setDown(down);
@@ -518,7 +558,13 @@ int main() {
 
     cout << "\nremove node test: " << endl;
     int nodeToRemove = 10;
+    cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
     (*secondGLL).removeANode(nodeToRemove);
+    cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
+
+//    int test = 988;
+//    (*secondGLL)[13].setInfo(test);
+
     cout << (*secondGLL) << endl;
 
     delete secondGLL;
