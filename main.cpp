@@ -174,6 +174,7 @@ public:
     ArrayGLL(ArrayGLL<T> &anotherOne);
     ArrayGLL<T> &operator=(ArrayGLL<T> &anotherOne);
     void display(); //display in parenthesis format 10% BONUS
+    void displayHelper(int root);
     int find(T &key); //return the index position where you find
     int findHelper(T &key, int startingIndex);
     // the element key; -1 if not found; use recursive search
@@ -241,6 +242,36 @@ template <class T> ArrayGLL<T>& ArrayGLL<T>::operator=(ArrayGLL<T> &anotherOne) 
 
 template <class T> void ArrayGLL<T>::display() {
     cout << "(display bonus not completed)\n" << endl;
+    displayHelper(firstElement);
+
+}
+
+template <class T> void ArrayGLL<T>::displayHelper(int root) {
+    if (root == -1) return;
+    if (myGLL[root].getInfo() == 999) return;
+    cout << myGLL[root].getInfo();
+
+    if ((myGLL[root].getNext() != -1 && myGLL[root].getDown() != -1))   {
+
+        cout << " (";
+        displayHelper(myGLL[root].getDown());
+        cout << " ) ";
+        displayHelper(myGLL[root].getNext());
+    }
+    else if (myGLL[root].getDown() != -1)   {
+        int tempRoot = myGLL[root].getDown();
+        cout << " (";
+        displayHelper(tempRoot);
+        cout << " )";
+    }
+    else if(myGLL[root].getNext() != -1)   {
+        int tempRoot = myGLL[root].getNext();
+        cout << " ";
+        displayHelper(tempRoot);
+    }
+
+    return;
+
 }
 
 template <class T> int ArrayGLL<T>::find(T &key) {
@@ -427,15 +458,10 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
     if (myGLL[L].getDown() == -1)   {
         if ( myGLL[L].getNext() == -1)   {
             deletedNode = L;
-//            int info = 998;
-//            int newDownNext = -1;
             cout << "This1: " << myGLL[L] << endl;
             cout << "node to be removed:" << L << endl;
-//            removeHelper(L);
 
-            myGLL[L].setInfo(deletedNumber);
-            myGLL[L].setDown(deleteDownNext);
-            myGLL[L].setNext(deleteDownNext);
+            removeHelper(L);
             cout << "This2: " << myGLL[L] << endl;
             cout << "remove called--------------------------------1" << endl;
 
@@ -452,6 +478,7 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
         deletedNode = nodeKeeper;
         int info = 998;
         int deleter = -1;
+        cout <<"NODE TO BE REMEMBER NOT LEAF: " << nodeKeeper << endl;
         removeHelper(nodeKeeper);
         cout << "remove called--------------------------------2" << endl;
 //        myGLL[nodeKeeper].setInfo(info);
@@ -471,11 +498,9 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
 }
 
 template <class T> void ArrayGLL<T>::removeHelper(int index) {
-    int newInfo = 998;
-    int newNextAndDown = -1;
-    myGLL[index].setInfo(newInfo);
-    myGLL[index].setNext(newNextAndDown);
-    myGLL[index].setDown(newNextAndDown);
+    myGLL[index].setInfo(deletedNumber);
+    myGLL[index].setNext(deleteDownNext);
+    myGLL[index].setDown(deleteDownNext);
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -561,11 +586,13 @@ int main() {
     cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
     (*secondGLL).removeANode(nodeToRemove);
     cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
+    (*secondGLL).display();
 
 //    int test = 988;
 //    (*secondGLL)[13].setInfo(test);
 
-    cout << (*secondGLL) << endl;
+
+//    cout << (*secondGLL) << endl;
 
     delete secondGLL;
     return 0;
