@@ -97,11 +97,11 @@ template <class T> void GLRow<T>::setDown(int d) {
 }
 
 template <class T> void GLRow<T>::setInfo(T &x) {
-    _Info = &x;
+    _Info = new T(x);
 }
 
 template <class T> GLRow<T>::~GLRow() { // todo Maybe turn info to 999, next to -1 and down to -1
-    int info = 998;
+    int info = 999;
     setInfo(info);
     _Next = -1;
     _Down = -1;
@@ -241,7 +241,6 @@ template <class T> ArrayGLL<T>& ArrayGLL<T>::operator=(ArrayGLL<T> &anotherOne) 
 }
 
 template <class T> void ArrayGLL<T>::display() {
-    cout << "(display bonus not completed)\n" << endl;
     displayHelper(firstElement);
 
 }
@@ -296,6 +295,7 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
         }
     }
     else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
+//        cout <<"info: " << myGLL[0].getInfo() <<  "next: " << myGLL[0].getNext() << "down: " << myGLL[0].getDown() << endl;
         foundElement = -1; //Returns -1 if the key is not in the generalized linked list
     }
     else if (myGLL[startingIndex].getNext() == -1)   {
@@ -441,31 +441,55 @@ template <class T> int ArrayGLL<T>::findFree() { //todo test this
 }
 
 template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo test this
-    GLRow<T> childElement(child);
-    int indexOfParent = find(parent);
-    int freeIndex = findFree();
-    int tempDown = myGLL[indexOfParent].getDown();
-    myGLL[indexOfParent].setDown(freeIndex);
-    childElement.setNext(tempDown);
-    childElement.setDown(-1);
-    myGLL[freeIndex] = childElement;
+
+
+
+
+    int IndexOfParent = find(parent);
+    if(IndexOfParent == -1){
+        return;
+    }
+    int freeIndex = firstFree;
+    firstFree += 1;
+    myGLL[freeIndex].setInfo(child);
+    int tempDown = myGLL[IndexOfParent].getDown();
+    myGLL[IndexOfParent].setDown(freeIndex);
+    myGLL[freeIndex].setNext(tempDown);
+    myGLL[freeIndex].setDown(-1);
+
+
+//    GLRow<T> childElement(child);
+//    int indexOfParent = find(parent);
+//    int freeIndex = findFree();
+//    int tempDown = myGLL[indexOfParent].getDown();
+//    myGLL[indexOfParent].setDown(freeIndex);
+//    childElement.setNext(tempDown);
+//    childElement.setDown(-1);
+//    myGLL[freeIndex] = childElement;
+//    myGLL[freeIndex].setNext(tempDown);
+//    myGLL[freeIndex].setDown(-1);
+
 }
 
 template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
     //todo not done
     int L = find(node);
-    int deletedNode = -1;
     if (myGLL[L].getDown() == -1)   {
         if ( myGLL[L].getNext() == -1)   {
-            deletedNode = L;
-            cout << "This1: " << myGLL[L] << endl;
-            cout << "node to be removed:" << L << endl;
+            myGLL[L].setInfo(deletedNumber);
 
-            removeHelper(L);
-            cout << "This2: " << myGLL[L] << endl;
-            cout << "remove called--------------------------------1" << endl;
+        }
+        else   {
+//            myGLL[L] = myGLL[myGLL[L].getNext()]; // Should work?
+            int tempNext = myGLL[L].getNext();
+            int newInfo = myGLL[tempNext].getInfo(); //should be able to do =
+            int newNext = myGLL[tempNext].getNext();
+            int newDown = myGLL[tempNext].getDown();
 
-//            delete& myGLL[L]; //todo Get nathan to help
+            myGLL[L].setInfo(newInfo);
+            myGLL[L].setNext(newNext);
+            myGLL[L].setDown(newDown);
+            myGLL[tempNext].setInfo(deletedNumber); //only madetory i think..
         }
     }
     else {
@@ -473,27 +497,26 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
         while (myGLL[nodeKeeper].getDown() != -1)   {
             nodeKeeper = myGLL[nodeKeeper].getDown();
         }
-//        cout << "HIT";
-        myGLL[L] = myGLL[nodeKeeper];
-        deletedNode = nodeKeeper;
-        int info = 998;
-        int deleter = -1;
-        cout <<"NODE TO BE REMEMBER NOT LEAF: " << nodeKeeper << endl;
-        removeHelper(nodeKeeper);
-        cout << "remove called--------------------------------2" << endl;
-//        myGLL[nodeKeeper].setInfo(info);
-//        myGLL[nodeKeeper].setNext(deleter);
-//        myGLL[nodeKeeper].setDown(deleter);
-//        delete& myGLL[nodeKeeper]; //todo get nathan to help
+
+        int infoReplace = myGLL[nodeKeeper].getInfo();
+
+        if ( myGLL[nodeKeeper].getNext() == -1)  {
+            myGLL[nodeKeeper].setInfo(deletedNumber);
+            myGLL[L].setDown(deleteDownNext);
+        }
+        else   {
+            int tempNext = myGLL[nodeKeeper].getNext();
+            int newInfo = myGLL[tempNext].getInfo(); //should be able to do =
+            int newNext = myGLL[tempNext].getNext();
+            int newDown = myGLL[tempNext].getDown();
+
+            myGLL[nodeKeeper].setInfo(newInfo);
+            myGLL[nodeKeeper].setNext(newNext);
+            myGLL[nodeKeeper].setDown(newDown);
+            myGLL[tempNext].setInfo(deletedNumber); //only madetory i think..
+        }
+        myGLL[L].setInfo(infoReplace);
     }
-//    int freeIndex = firstFree;
-//    while (myGLL[freeIndex].getNext() != -1)   {
-//        freeIndex = myGLL[freeIndex].getNext();
-//    }
-//    if (deletedNode != -1)   {
-//        myGLL[freeIndex].setNext(deletedNode);
-//    }
-    cout << "ThisOutside: " << myGLL[L] << endl;
 
 }
 
@@ -520,80 +543,61 @@ template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
  * The Main class is used to run the entire program. It calls upon other classes and their methods.
  */
 int main() {
-
-    ArrayGLL<int> firstGLL (20);  //Creates new ArrayGLL
-    int noElements, value, next, down, parentPos;
-    int pos = -1;
-    int keyValue;
-    int tempValue = 0;
-    GLRow<int> oneRow (tempValue); //note that this statically defined
-//    GLRow<int>* oneRow = (GLRow<int>*)malloc(sizeof(GLRow<int>));
-//    oneRow->setInfo(tempValue);
-
+    ArrayGLL<int>* firstGLL;
+    int noElements;
     cin >> noElements;
-    for (int i = 0; i < noElements; i++) {  //Taking inputs and setting them to values and adding them to firstGLL
-        cin >> value >> next >> down;
-//        GLRow<int>* oneRow = (GLRow<int>*)malloc(sizeof(GLRow<int>));
-
-        oneRow.setInfo(value);
-        oneRow.setNext(next);
-        oneRow.setDown(down);
-        firstGLL[i] = oneRow;
-
+    firstGLL = new ArrayGLL<int>(noElements);
+    int count;
+    char input;
+    int parent, child;
+    cout << "The size of the array is " << noElements << endl;
+    while (cin>>input)   {
+      switch(input)   {
+          case 'I':   {
+              cin >> parent;
+              cin >> child;
+              if (parent == -1)   {
+                  (*firstGLL)[0].setInfo(child);
+                  (*firstGLL)[0].setNext(-1);
+                  firstGLL->setFirstElement(0);
+                  firstGLL->setFirstFree(1);
+                  (*firstGLL)[firstGLL->getFirstFree()].setNext(2);
+              }
+              else   {
+                  (*firstGLL).insertAChild(parent, child);
+              }
+              cout << "Element inserted" << endl;
+              count = count + 1;
+              break;
+          }
+          case 'R':   {
+              cin >> parent;
+              (*firstGLL).removeANode(parent);
+              cout << "Element removed" << endl;
+              break;
+          }
+          case 'F':   {
+              cin >> parent;
+              int found = (*firstGLL).find(parent);
+              cout << "The element "<< parent << " is found at index: " << found << endl;
+              break;
+          }
+          case 'P':   {
+              cin >> parent;
+              int foundParent = (*firstGLL).parentPos(parent);
+              cout << "The parent of " << parent << " is: " << foundParent << endl;
+          }
+          case 'D':   {
+              (*firstGLL).display();
+              cout << "\n";
+              break;
+          }
+          default: cout << "Invalid command" << endl;
+          break;
+      }
     }
-    firstGLL.setFirstFree (8); //Setting FirstFree
-    firstGLL.setFirstElement (2); //Setting FirstElement
-    cout << firstGLL << endl;
-    firstGLL.display();
-    ArrayGLL<int>* secondGLL = new ArrayGLL<int>(firstGLL);  //Creating a second arrayGLL and copying the contents of firstGLL
 
-//    int tempValue600 = 600;
-//    (*secondGLL)[1].setInfo(tempValue600); //Replaceing the info of [1]
-//    int tempValue700 = 700;
-//    (*secondGLL)[2].setInfo(tempValue700); //Replacing the info of [2]
+    delete firstGLL;
 
-    cout << *secondGLL << endl;
-    (*secondGLL).display();
-
-    keyValue = 700;
-    pos = (*secondGLL).find(keyValue);
-    if (pos != -1)   {
-        cout << "Finding Info of 700 with find(700), setting it to pos...\npos = the index of "; //Cout explains
-        cout << (*secondGLL)[pos] << endl;
-        cout << "Printing the value of nodes up to pos(700 as found with find()) with findDisplayPath(pos): " << endl;
-        (*secondGLL).findDisplayPath(keyValue);
-    }
-
-    cout << "Printing out the Parent Position of 700: " << endl; //Cout explains
-    parentPos = (*secondGLL).parentPos(keyValue);
-    if (parentPos != -1)   {
-        cout << (*secondGLL)[parentPos] << endl;
-    }
-    else {
-        cout << "There is no parent position\n" << endl; //Cout explains
-    }
-    cout << "Size of secondGLL: " << (*secondGLL).size() << endl;
-    cout << "Number free in secondGLL: " << (*secondGLL).noFree() << endl;
-
-    cout << "insert test: " << endl;
-    int parent = 80;
-    int child = 100;
-    (*secondGLL).insertAChild(parent, child); //todo finish
-    cout << (*secondGLL) << endl;
-
-    cout << "\nremove node test: " << endl;
-    int nodeToRemove = 10;
-    cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
-    (*secondGLL).removeANode(nodeToRemove);
-    cout << "This is the test for [13]: " <<(*secondGLL)[13] << endl;
-    (*secondGLL).display();
-
-//    int test = 988;
-//    (*secondGLL)[13].setInfo(test);
-
-
-//    cout << (*secondGLL) << endl;
-
-    delete secondGLL;
     return 0;
 }
