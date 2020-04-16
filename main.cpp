@@ -1,10 +1,11 @@
 /**
  * CS-2413
- * project3.cpp
+ * project4.cpp
  * Purpose: Create a generalized list data type and its corresponding methods.
+ *          Build on top of project 3 by adding a insert and remove method. New main.
  *
  * @author Hunter Darr
- * @Version 1.0 3/23/2020
+ * @Version 2.0 4/9/2020
  */
 #include <iostream>
 using namespace std;
@@ -59,9 +60,8 @@ public:
 };
 
 template <class T> GLRow<T>::GLRow()   {
-//    _Info = NULL;
-int inf = 999; //todo revert to above
-setInfo(inf);
+    int inf = 999;
+    setInfo(inf);
     _Next = -1;
     _Down = -1;
 }
@@ -100,7 +100,7 @@ template <class T> void GLRow<T>::setInfo(T &x) {
     _Info = new T(x);
 }
 
-template <class T> GLRow<T>::~GLRow() { // todo Maybe turn info to 999, next to -1 and down to -1
+template <class T> GLRow<T>::~GLRow() {
     int info = 999;
     setInfo(info);
     _Next = -1;
@@ -147,6 +147,8 @@ template <class T> ostream& operator << (ostream& s, GLRow<T>& row)   {
  * - int getFirstElement(); Getter method for firstElement.
  * - void setFirstFree(int pos); Setter method for setFirstFree.
  * - void setFirstElement(int pos); Setter method for setFirstElement.
+ * - void insertAChild(T& parent, T& child); Inserts a new node into the generalized list.
+ * - void removeANode (T& node); Removes a node from the generalized list.
  */
 template<class T>
 class ArrayGLL;
@@ -196,10 +198,8 @@ public:
     int getFirstElement();
     void setFirstFree(int pos);
     void setFirstElement(int pos);
-    void insertAChild(T& parent, T& child); //todo New method for project 4
-    int findFree();
-    void removeANode (T& node); //todo New method for project 4
-    void removeHelper(int index);
+    void insertAChild(T& parent, T& child);
+    void removeANode (T& node);
     ~ArrayGLL(); //destructor
 };
 
@@ -295,7 +295,6 @@ template <class T> int ArrayGLL<T>::findHelper(T &key, int startingIndex) {
         }
     }
     else if ( (myGLL[startingIndex].getNext() == -1) && (myGLL[startingIndex].getDown() == -1))   {
-//        cout <<"info: " << myGLL[0].getInfo() <<  "next: " << myGLL[0].getNext() << "down: " << myGLL[0].getDown() << endl;
         foundElement = -1; //Returns -1 if the key is not in the generalized linked list
     }
     else if (myGLL[startingIndex].getNext() == -1)   {
@@ -430,21 +429,11 @@ template <class T> void ArrayGLL<T>::setFirstElement(int pos) {
 
 template <class T> ArrayGLL<T>::~ArrayGLL() {
     if ( myGLL != NULL) {
-//        delete[] myGLL;
+        delete[] myGLL;
     }
 }
 
-template <class T> int ArrayGLL<T>::findFree() { //todo test this
-    int firstFreeReturn = firstFree;
-    firstFree = myGLL[firstFreeReturn].getNext();
-    return firstFreeReturn;
-}
-
-template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo test this
-
-
-
-
+template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) {
     int IndexOfParent = find(parent);
     if(IndexOfParent == -1){
         return;
@@ -456,43 +445,28 @@ template <class T> void ArrayGLL<T>::insertAChild(T &parent, T &child) { //todo 
     myGLL[IndexOfParent].setDown(freeIndex);
     myGLL[freeIndex].setNext(tempDown);
     myGLL[freeIndex].setDown(-1);
-
-
-//    GLRow<T> childElement(child);
-//    int indexOfParent = find(parent);
-//    int freeIndex = findFree();
-//    int tempDown = myGLL[indexOfParent].getDown();
-//    myGLL[indexOfParent].setDown(freeIndex);
-//    childElement.setNext(tempDown);
-//    childElement.setDown(-1);
-//    myGLL[freeIndex] = childElement;
-//    myGLL[freeIndex].setNext(tempDown);
-//    myGLL[freeIndex].setDown(-1);
-
 }
 
-template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
-    //todo not done
+template <class T> void ArrayGLL<T>::removeANode(T &node) {
     int L = find(node);
-    if (myGLL[L].getDown() == -1)   {
-        if ( myGLL[L].getNext() == -1)   {
+    if (myGLL[L].getDown() == -1)   {  //is a leaf node
+        if ( myGLL[L].getNext() == -1)   {  //furthest right leaf node
             myGLL[L].setInfo(deletedNumber);
 
         }
         else   {
-//            myGLL[L] = myGLL[myGLL[L].getNext()]; // Should work?
             int tempNext = myGLL[L].getNext();
-            int newInfo = myGLL[tempNext].getInfo(); //should be able to do =
+            int newInfo = myGLL[tempNext].getInfo();
             int newNext = myGLL[tempNext].getNext();
             int newDown = myGLL[tempNext].getDown();
 
             myGLL[L].setInfo(newInfo);
             myGLL[L].setNext(newNext);
             myGLL[L].setDown(newDown);
-            myGLL[tempNext].setInfo(deletedNumber); //only madetory i think..
+            myGLL[tempNext].setInfo(deletedNumber);
         }
     }
-    else {
+    else {  //not a leaf node
         int nodeKeeper = L;
         while (myGLL[nodeKeeper].getDown() != -1)   {
             nodeKeeper = myGLL[nodeKeeper].getDown();
@@ -506,24 +480,18 @@ template <class T> void ArrayGLL<T>::removeANode(T &node) { //Maybe reset
         }
         else   {
             int tempNext = myGLL[nodeKeeper].getNext();
-            int newInfo = myGLL[tempNext].getInfo(); //should be able to do =
+            int newInfo = myGLL[tempNext].getInfo();
             int newNext = myGLL[tempNext].getNext();
             int newDown = myGLL[tempNext].getDown();
 
             myGLL[nodeKeeper].setInfo(newInfo);
             myGLL[nodeKeeper].setNext(newNext);
             myGLL[nodeKeeper].setDown(newDown);
-            myGLL[tempNext].setInfo(deletedNumber); //only madetory i think..
+            myGLL[tempNext].setInfo(deletedNumber);
         }
         myGLL[L].setInfo(infoReplace);
     }
 
-}
-
-template <class T> void ArrayGLL<T>::removeHelper(int index) {
-    myGLL[index].setInfo(deletedNumber);
-    myGLL[index].setNext(deleteDownNext);
-    myGLL[index].setDown(deleteDownNext);
 }
 
 template <class T> ostream& operator << (ostream& s, ArrayGLL<T>& array)   {
@@ -553,7 +521,7 @@ int main() {
     cout << "The size of the array is " << noElements << endl;
     while (cin>>input)   {
       switch(input)   {
-          case 'I':   {
+          case 'I':   {   //Used to insert a new node
               cin >> parent;
               cin >> child;
               if (parent == -1)   {
@@ -570,24 +538,25 @@ int main() {
               count = count + 1;
               break;
           }
-          case 'R':   {
+          case 'R':   {  //Used to remove a node
               cin >> parent;
               (*firstGLL).removeANode(parent);
               cout << "Element removed" << endl;
               break;
           }
-          case 'F':   {
+          case 'F':   {  //Used to find the index of a node
               cin >> parent;
               int found = (*firstGLL).find(parent);
               cout << "The element "<< parent << " is found at index: " << found << endl;
               break;
           }
-          case 'P':   {
+          case 'P':   {  //used to find the parent of a node
               cin >> parent;
               int foundParent = (*firstGLL).parentPos(parent);
-              cout << "The parent of " << parent << " is: " << foundParent << endl;
+              cout << "The parent of " << parent << " is: " << (*firstGLL)[foundParent].getInfo() << endl;
+              break;
           }
-          case 'D':   {
+          case 'D':   {  //Used to display the generalized list
               (*firstGLL).display();
               cout << "\n";
               break;
